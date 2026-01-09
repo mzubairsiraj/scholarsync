@@ -1,6 +1,6 @@
-﻿namespace ScholarSync
+﻿namespace ScholarSync.Forms
 {
-    partial class WelocmeForm
+    partial class DashBoardForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,23 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WelocmeForm));
-            this.SuspendLayout();
-            // 
-            // WelocmeForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1255, 707);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "WelocmeForm";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.WelocmeForm_Load);
-            this.ResumeLayout(false);
-
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Text = "DashBoardForm";
         }
 
         #endregion
     }
 }
-
