@@ -1,5 +1,8 @@
 ﻿using ScholarSync.Commons;
 using ScholarSync.Forms;
+using ScholarSync.Models;
+using ScholarSync.Db_Connection;
+using ScholarSync.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Npgsql;
 
 
 namespace ScholarSync
@@ -33,18 +37,19 @@ namespace ScholarSync
         Panel loginCardPanel;
 
         Label loginTitleBox;
-        Label userNameLabel;
+        Label CnicLabel;
         Label passwordLabel;
         Label userTypeLabel;
-        Label forgotPasswordLabel;
 
         ComboBox userTypeComboBox;
 
-        TextBox userNameTextBox;
+        TextBox CnicTextBox;
         TextBox passwordTextBox;
 
         Button loginButton;
 
+        // Loading Indicator
+        LoadingIndicator loadingIndicator;
 
 
 
@@ -61,6 +66,162 @@ namespace ScholarSync
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(ConfigurationConstants.ScreenWidth, ConfigurationConstants.ScreenHeight);
             InitUI();
+
+
+             
+        
+        }
+
+        private void LoginButton_Click(object sender, EventArgs e)
+        {
+            // Validate User Type Selection
+            if (userTypeComboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please select a user type.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                userTypeComboBox.Focus();
+                return;
+            }
+
+            string selectedUserType = userTypeComboBox.SelectedItem.ToString();
+
+            // Validate only Administrator and Teacher are allowed
+            if (selectedUserType != "Admin" && selectedUserType != "Teacher")
+            {
+                MessageBox.Show("Only Administrator and Teacher can login.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                userTypeComboBox.Focus();
+                return;
+            }
+
+            // Validate CNIC Input
+            string cnic = CnicTextBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(cnic))
+            {
+                MessageBox.Show("Please enter your CNIC.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CnicTextBox.Focus();
+                return;
+            }
+
+            // Validate CNIC Format (13 digits with optional hyphens: 12345-6789012-3)
+            string cnicDigitsOnly = cnic.Replace("-", "");
+            if (cnicDigitsOnly.Length != 13 || !cnicDigitsOnly.All(char.IsDigit))
+            {
+                MessageBox.Show("Please enter a valid CNIC (13 digits).\nFormat: 12345-6789012-3", "Invalid CNIC",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CnicTextBox.Focus();
+                return;
+            }
+
+            // Validate Password
+            string password = passwordTextBox.Text;
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Please enter your password.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                passwordTextBox.Focus();
+                return;
+            }
+
+            if (password.Length < 6)
+            {
+                MessageBox.Show("Password must be at least 6 characters long.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                passwordTextBox.Focus();
+                return;
+            }
+
+            // Authenticate User
+            AuthenticateUser(cnicDigitsOnly, password, selectedUserType);
+        }
+
+        private void AuthenticateUser(string cnic, string password, string userType)
+        {
+            // Show loading indicator
+            loadingIndicator.Show("Authenticating");
+            
+            // Give the UI time to refresh and show the loading indicator
+            System.Threading.Thread.Sleep(100);
+
+            try
+            {
+                using (NpgsqlConnection conn = DbConnector.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"SELECT id, cnic, name, email, role, created_at, updated_at 
+                                   FROM users 
+                                   WHERE cnic = @cnic AND password = @password AND role = @role::user_role";
+
+                    
+
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@cnic", cnic);
+                        cmd.Parameters.AddWithValue("@password", password);
+                        cmd.Parameters.AddWithValue("@role", userType);
+
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // User authenticated successfully
+                                UserModel currentUser = new UserModel
+                                {
+                                    Id = reader["id"].ToString(),
+                                    CNIC = reader["cnic"].ToString(),
+                                    UserName = reader["name"].ToString(),
+                                    Email = reader["email"].ToString(),
+                                    Role = reader["role"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    UpdatedAt = Convert.ToDateTime(reader["updated_at"])
+                                };
+
+                                // Set user in global session
+                                SessionManager.Login(currentUser);
+
+                                // Hide loading indicator
+                                loadingIndicator.Hide();
+
+                                // Show success message
+                                MessageBox.Show($"Welcome, {currentUser.UserName}!\n\nRole: {currentUser.Role}",
+                                    "Login Successful",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information);
+
+                                // Open Dashboard
+                                DashBoardForm dashBoardForm = new DashBoardForm(this);
+                                dashBoardForm.Show();
+                                this.Hide();
+                            }
+                            else
+                            {
+                                // Hide loading indicator
+                                loadingIndicator.Hide();
+
+                                // Authentication failed
+                                MessageBox.Show("Invalid CNIC or Password.\n\nPlease check your credentials and try again.",
+                                    "Login Failed",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                                passwordTextBox.Clear();
+                                passwordTextBox.Focus();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hide loading indicator
+                loadingIndicator.Hide();
+
+                MessageBox.Show($"Login Error: {ex.Message}\n\nPlease try again or contact administrator.",
+                    "Database Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void RenderLeftPanel()
@@ -107,7 +268,7 @@ namespace ScholarSync
                 Text = "View User Manual",
                 Font = new Font("Arial", 12, FontStyle.Regular),
                 BackColor = ConfigurationConstants.SSLightNavyColor,
-                ForeColor = Color.White,
+                ForeColor = ConfigurationConstants.SSWhiteColor,
                 Size = new Size(180, 40),
                 Location = new Point(leftPanelCenterX + 50, leftPanelCenterY + 250),
                 FlatStyle = FlatStyle.Flat
@@ -118,7 +279,7 @@ namespace ScholarSync
                 Text = "Get Started",
                 Font = new Font("Arial", 12, FontStyle.Regular),
                 BackColor = ConfigurationConstants.SSDarkNavyColor,
-                ForeColor = Color.White,
+                ForeColor = ConfigurationConstants.SSWhiteColor,
                 Size = new Size(180, 40),
                 Location = new Point(leftPanelCenterX + 250, leftPanelCenterY + 250),
                 FlatStyle = FlatStyle.Flat
@@ -130,6 +291,22 @@ namespace ScholarSync
             leftPanel.Controls.Add(subtitleBox);
             leftPanel.Controls.Add(viewManualBtn);
             leftPanel.Controls.Add(CtaBtn);
+
+            // Add click handler for View User Manual button
+            viewManualBtn.Click += (sender, eventArgs) =>
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("https://github.com/mzubairsiraj/scholarsync/blob/master/README.md");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Unable to open user manual.\n\nError: {ex.Message}\n\nPlease visit: https://github.com/mzubairsiraj/scholarsync",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            };
         }
         private void RenderRightPanel()
         {
@@ -201,18 +378,17 @@ namespace ScholarSync
 
             userTypeComboBox.Items.AddRange(new string[]
             {
-                "Administrator",
+                "Admin",
                 "Teacher",
-                "Student",
 
             });
             userTypeComboBox.SelectedIndex = 0;
 
 
 
-            userNameLabel = new Label
+            CnicLabel = new Label
             {
-                Text = "Username:",
+                Text = "Cnic:",
                 Font = new Font("Arial", 12, FontStyle.Regular),
                 ForeColor = ConfigurationConstants.SSDarkNavyColor,
                 Location = new Point(labelLeftMargin, topPaddingLoginCard + 120),
@@ -221,12 +397,13 @@ namespace ScholarSync
                 AutoSize = false
             };
 
-            userNameTextBox = new TextBox
+            CnicTextBox = new TextBox
             {
                 Font = new Font("Arial", 15, FontStyle.Regular),
                 ForeColor = ConfigurationConstants.SSDarkNavyColor,
                 Location = new Point(inputLeftMargin, topPaddingLoginCard + 120),
                 Size = new Size(inputWidth, inputHeight),
+                
             };
 
 
@@ -250,17 +427,6 @@ namespace ScholarSync
                 UseSystemPasswordChar = true,
             };
 
-            forgotPasswordLabel = new Label
-            {
-                Text = "Forgot Password ?",
-                Font = new Font("Arial", 10, FontStyle.Underline),
-                ForeColor = ConfigurationConstants.SSDarkNavyColor,
-                Location = new Point((loginPanel.Width / 2) - 80, topPaddingLoginCard + 200),
-                TextAlign = ContentAlignment.MiddleRight,
-                AutoSize = true,
-                Cursor = Cursors.Hand,
-            };
-
             loginButton = new Button
             {
                 Text = "Login",
@@ -268,18 +434,17 @@ namespace ScholarSync
                 BackColor = ConfigurationConstants.SSDarkNavyColor,
                 ForeColor = ConfigurationConstants.SSWhiteColor,
                 Size = new Size(inputWidth, inputHeight),
-                Location = new Point((loginCardPanel.Width - inputWidth) / 2, topPaddingLoginCard + 250),
+                Location = new Point((loginCardPanel.Width - inputWidth) / 2, topPaddingLoginCard + 220),
                 FlatStyle = FlatStyle.Flat
             };
 
             loginCardPanel.Controls.Add(loginTitleBox);
             loginCardPanel.Controls.Add(userTypeLabel);
             loginCardPanel.Controls.Add(userTypeComboBox);
-            loginCardPanel.Controls.Add(userNameLabel);
-            loginCardPanel.Controls.Add(userNameTextBox);
+            loginCardPanel.Controls.Add(CnicLabel);
+            loginCardPanel.Controls.Add(CnicTextBox);
             loginCardPanel.Controls.Add(passwordLabel);
             loginCardPanel.Controls.Add(passwordTextBox);
-            loginCardPanel.Controls.Add(forgotPasswordLabel);
             loginCardPanel.Controls.Add(loginButton);
 
 
@@ -288,14 +453,8 @@ namespace ScholarSync
 
 
 
-            //UI Logic can be added here for loginButton Click event and forgotPasswordLabel Click event
-            loginButton.Click += (sender, eventArgs) =>
-            {
-                DashBoardForm dashBoardForm = new DashBoardForm(this);
-                dashBoardForm.Show();
-                this.Hide();
-            };
-
+            //UI Logic can be added here for loginButton Click event
+            loginButton.Click += LoginButton_Click;
         }
         private void InitUI()
         {
@@ -332,8 +491,10 @@ namespace ScholarSync
             RenderLeftPanel();
             RenderRightPanel();
 
-
-
+            // Initialize loading indicator after all UI is created
+            loadingIndicator = new LoadingIndicator();
+            this.Controls.Add(loadingIndicator);
+            loadingIndicator.BringToFront();
         }
 
 
