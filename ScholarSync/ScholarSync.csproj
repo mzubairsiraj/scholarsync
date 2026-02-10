@@ -9,6 +9,9 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resourses\ScholarSync.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     <PackageReference Include="Npgsql" Version="4.1.14" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
@@ -73,5 +76,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ScholarSync.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\ScholarSync.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Resourses\Logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
