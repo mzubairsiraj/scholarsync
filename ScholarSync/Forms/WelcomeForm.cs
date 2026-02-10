@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Npgsql;
+using System.IO;
 
 
 namespace ScholarSync
@@ -236,7 +237,7 @@ namespace ScholarSync
 
             PictureBox logoPictureBox = new PictureBox
             {
-                Image = new Bitmap(@"D:\BS CS 5th\C Sharp Console Application\ScholarSync\ScholarSync\Resourses\Logo.png"),
+                Image = new Bitmap(Path.Join(AppDomain.CurrentDomain.BaseDirectory,"../../../Resourses","logo.png")),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Location = new Point(leftPanelCenterX + 200, leftPanelCenterY - 100),
 

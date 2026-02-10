@@ -1,13 +1,16 @@
 ﻿using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.DirectoryServices.ActiveDirectory;
+using System;
 
 
 namespace ScholarSync.Commons
 {
     public struct ConfigurationConstants
     {
-        public static Icon LogoIcon { get; } = new Icon(Path.GetFullPath(@"../../ScholarSync.ico"));
+        
+        public static Icon LogoIcon { get; } = new Icon(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "../../../Resourses", "ScholarSync.ico"));
         public static int ScreenWidth { get; } = Screen.PrimaryScreen.Bounds.Width;
         public static int ScreenHeight { get; } = Screen.PrimaryScreen.Bounds.Height;
        // public static string ConnectionString { get; } = "Host=ep-super-tree-a8g0f75w-pooler.eastus2.azure.neon.tech;Port=5432;Username=neondb_owner;Password=npg_peLsj5fhm7aq;Database=neondb;SSL Mode=Require;";
