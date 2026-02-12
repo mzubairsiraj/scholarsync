@@ -170,7 +170,7 @@ namespace ScholarSync.Forms
             // Logo image
             sideBarLogoPictureBox = new PictureBox
             {
-                Image = new Bitmap(@"../../Resourses/Logo.png"),
+                Image = ConfigurationConstants.LogoImage,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Location = new Point(PADDING, (LOGO_CONTAINER_HEIGHT - 40) / 2),
                 Size = new Size(40, 40)

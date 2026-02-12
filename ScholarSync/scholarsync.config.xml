@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <ConnectionStrings>
+    <DefaultConnection>Host=localhost;Port=5432;Username=postgres;Password=YOUR_PASSWORD;Database=scholarsync</DefaultConnection>
+    <CloudConnection>Host=ep-super-tree-a8g0f75w-pooler.eastus2.azure.neon.tech;Port=5432;Username=neondb_owner;Password=npg_peLsj5fhm7aq;Database=neondb;SSL Mode=Require;</CloudConnection>
+  </ConnectionStrings>
+  <AppSettings>
+    <ApplicationName>ScholarSync</ApplicationName>
+    <Version>2.0.0</Version>
+    <Environment>Development</Environment>
+    <UseCloudDatabase>false</UseCloudDatabase>
+    <EnableDetailedErrors>true</EnableDetailedErrors>
+    <SessionTimeoutMinutes>30</SessionTimeoutMinutes>
+    <MaxLoginAttempts>5</MaxLoginAttempts>
+    <LockoutDurationMinutes>15</LockoutDurationMinutes>
+  </AppSettings>
+  <Syncfusion>
+    <LicenseKey>Ngo9BigBOggjHTQxAR8/V1JGaF1cXmhLYVJxWmFZfVhgcl9DZlZVRmYuP1ZhSXxVdkdiWX9YdXJRRGlYUEN9XEA=</LicenseKey>
+  </Syncfusion>
+  <Email>
+    <SmtpHost>smtp.gmail.com</SmtpHost>
+    <SmtpPort>587</SmtpPort>
+    <UseSsl>true</UseSsl>
+    <SenderEmail>noreply@scholarsync.edu</SenderEmail>
+    <SenderName>ScholarSync System</SenderName>
+    <Username></Username>
+    <Password></Password>
+    <EnableEmailNotifications>false</EnableEmailNotifications>
+  </Email>
+  <Security>
+    <PasswordMinLength>8</PasswordMinLength>
+    <RequireUppercase>true</RequireUppercase>
+    <RequireLowercase>true</RequireLowercase>
+    <RequireDigit>true</RequireDigit>
+    <RequireSpecialChar>false</RequireSpecialChar>
+    <BCryptWorkFactor>12</BCryptWorkFactor>
+    <EnableTwoFactorAuth>false</EnableTwoFactorAuth>
+  </Security>
+  <Logging>
+    <LogLevel>
+      <Default>Information</Default>
+      <Microsoft>Warning</Microsoft>
+      <System>Warning</System>
+    </LogLevel>
+    <EnableFileLogging>true</EnableFileLogging>
+    <LogDirectory>Logs</LogDirectory>
+    <RetainDays>30</RetainDays>
+  </Logging>
+  <UI>
+    <Theme>Office2019</Theme>
+    <PrimaryColor>#0D2440</PrimaryColor>
+    <SecondaryColor>#2E5E99</SecondaryColor>
+    <AccentColor>#7BA4D0</AccentColor>
+    <BackgroundColor>#E7F0FA</BackgroundColor>
+    <EnableAnimations>true</EnableAnimations>
+    <DefaultPageSize>25</DefaultPageSize>
+  </UI>
+  <Features>
+    <EnableAttendance>true</EnableAttendance>
+    <EnableFeeManagement>true</EnableFeeManagement>
+    <EnableLibrary>false</EnableLibrary>
+    <EnableTimetable>true</EnableTimetable>
+    <EnableEmailNotifications>false</EnableEmailNotifications>
+    <EnableSMSNotifications>false</EnableSMSNotifications>
+  </Features>
+</Configuration>

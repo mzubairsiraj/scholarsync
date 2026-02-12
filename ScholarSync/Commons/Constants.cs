@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.DirectoryServices.ActiveDirectory;
 using System;
+using ScholarSync.Configuration;
 
 
 namespace ScholarSync.Commons
@@ -10,20 +11,26 @@ namespace ScholarSync.Commons
     public struct ConfigurationConstants
     {
         
-        public static Icon LogoIcon { get; } = new Icon(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "../../../Resourses", "ScholarSync.ico"));
+        public static Icon LogoIcon { get; } = new Icon(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "../../../Resources", "ScholarSync.ico"));
+        public static Image LogoImage { get; } = new Bitmap(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "../../../Resources", "logo.png"));
         public static int ScreenWidth { get; } = Screen.PrimaryScreen.Bounds.Width;
         public static int ScreenHeight { get; } = Screen.PrimaryScreen.Bounds.Height;
-       // public static string ConnectionString { get; } = "Host=ep-super-tree-a8g0f75w-pooler.eastus2.azure.neon.tech;Port=5432;Username=neondb_owner;Password=npg_peLsj5fhm7aq;Database=neondb;SSL Mode=Require;";
-       public static string ConnectionString { get; } = "Host=localhost;Port=5432;Username=postgres;Password=zubair1326;Database=scholarsync";
+        
+        // Connection string from configuration
+        public static string ConnectionString => AppConfiguration.Instance.GetConnectionString();
 
 
 
 
-        // Colors 
-        public static Color SSWhiteColor { get; } = ColorTranslator.FromHtml("#E7F0FA");
-        public static Color SSLightNavyColor { get; } = ColorTranslator.FromHtml("#7BA4D0");
-        public static Color SSDarkBlueColor { get; } = ColorTranslator.FromHtml("#2E5E99");
-        public static Color SSDarkNavyColor { get; } = ColorTranslator.FromHtml("#0D2440");
+        // Colors - loaded from configuration with fallback to defaults
+        public static Color SSWhiteColor => GetColorFromConfig(
+            AppConfiguration.Instance.UI?.BackgroundColor, "#E7F0FA");
+        public static Color SSLightNavyColor => GetColorFromConfig(
+            AppConfiguration.Instance.UI?.AccentColor, "#7BA4D0");
+        public static Color SSDarkBlueColor => GetColorFromConfig(
+            AppConfiguration.Instance.UI?.SecondaryColor, "#2E5E99");
+        public static Color SSDarkNavyColor => GetColorFromConfig(
+            AppConfiguration.Instance.UI?.PrimaryColor, "#0D2440");
         
         // UI-specific colors
         public static Color SSLightGrayBackground { get; } = Color.FromArgb(245, 245, 245);
@@ -34,6 +41,21 @@ namespace ScholarSync.Commons
         public static Color SSErrorRed { get; } = Color.OrangeRed;
         public static Color SSWarningOrange { get; } = Color.Orange;
 
+        /// <summary>
+        /// Helper method to get color from configuration
+        /// </summary>
+        private static Color GetColorFromConfig(string configValue, string defaultValue)
+        {
+            try
+            {
+                var colorString = !string.IsNullOrWhiteSpace(configValue) ? configValue : defaultValue;
+                return ColorTranslator.FromHtml(colorString);
+            }
+            catch
+            {
+                return ColorTranslator.FromHtml(defaultValue);
+            }
+        }
     }
 
 }

@@ -1,13 +1,16 @@
+using Syncfusion.WinForms.Controls;
 using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+
 
 namespace ScholarSync.Commons
 {
     
     public static class UIHelper
     {
-        // Layout Constants
+       
         public const int LABEL_WIDTH = 100;
         public const int CONTROL_WIDTH = 300;
         public const int CONTROL_HEIGHT = 50;
@@ -17,7 +20,35 @@ namespace ScholarSync.Commons
         public const int SECTION_SPACING = 30;
         public const int COLUMN_SPACING = 50;
 
-        // Create Section Header
+
+        public static void ApplyScholarSyncStyle(SfForm form)
+        {
+
+            form.WindowState = FormWindowState.Maximized;
+            form.MaximizeBox = false;
+            form.Style.BackColor = ConfigurationConstants.SSLightGrayBackground;
+            
+            form.Style.ShadowOpacity = 0;
+            form.Style.InactiveShadowOpacity = 0;
+            form.Style.Border.Color = ConfigurationConstants.SSBorderGray;
+            
+           
+
+
+            form.Icon = ConfigurationConstants.LogoIcon;
+           
+            form.IconSize = new Size(20,20);
+            
+            form.Style.TitleBar.BackColor = ConfigurationConstants.SSDarkNavyColor;
+            form.Style.TitleBar.ForeColor = ConfigurationConstants.SSWhiteColor;
+            form.Style.TitleBar.Height = 40;
+            form.Style.TitleBar.CloseButtonForeColor = ConfigurationConstants.SSWhiteColor;
+            form.Style.TitleBar.MinimizeButtonForeColor = ConfigurationConstants.SSWhiteColor;
+            
+
+
+            form.AllowRoundedCorners = true;
+        }
         public static int CreateSectionHeader(Panel parentPanel, string title, int yPosition)
         {
             Label sectionLabel = new Label
