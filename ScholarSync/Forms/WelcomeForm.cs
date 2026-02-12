@@ -218,7 +218,7 @@ namespace ScholarSync
                 // Hide loading indicator
                 loadingIndicator.Hide();
 
-                MessageBox.Show($"Login Error: {ex.Message}\n\nPlease try again or contact administrator.",
+                MessageBox.Show($"Login Error: {ex}\n\nPlease try again or contact administrator.",
                     "Database Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -237,7 +237,7 @@ namespace ScholarSync
 
             PictureBox logoPictureBox = new PictureBox
             {
-                Image = new Bitmap(Path.Join(AppDomain.CurrentDomain.BaseDirectory,"../../../Resourses","logo.png")),
+                Image = ConfigurationConstants.LogoImage,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Location = new Point(leftPanelCenterX + 200, leftPanelCenterY - 100),
 

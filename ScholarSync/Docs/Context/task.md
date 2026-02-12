@@ -1,0 +1,28 @@
+- [x] Explore Models <!-- id: 0 -->
+- [x] Explore Repositories <!-- id: 1 -->
+- [x] Explore Forms/UI logic <!-- id: 2 -->
+- [x] Explore Services/Business Logic <!-- id: 3 -->
+- [x] Synthesize findings <!-- id: 4 -->
+- [x] Refactor `SfUIHelper.cs` to use `AutoLabel` instead of `Label` <!-- id: 5 -->
+- [x] Verify usage of other Syncfusion controls (`SfButton`, `SfTextBox`, `SfComboBox`) <!-- id: 6 -->
+- [x] Clean up `SYNCFUSION_LIMITATIONS.md` if necessary <!-- id: 7 -->
+- [x] Create `Controls/Auth/LoginControl.cs` using `SfUIHelper` <!-- id: 8 -->
+- [x] Create `Controls/Auth/RegisterControl.cs` using `SfUIHelper` <!-- id: 9 -->
+- [x] Refactor `SfWelcomeForm.cs` to use the new controls <!-- id: 10 -->
+- [x] Fix `CS0246` error by replacing `SfTextBox` with `TextBoxExt` <!-- id: 11 -->
+- [x] Align Syncfusion package versions to 27.1.48 <!-- id: 13 -->
+- [x] Run application and debug startup crash <!-- id: 12 -->
+- [x] Clean and Rebuild to ensure DLLs are updated <!-- id: 14 -->
+- [x] Verify user's package updates and alignment <!-- id: 15 -->
+- [x] Implement Modern Windows 11 Design (Rounded Inputs) in `SfUIHelper` <!-- id: 17 -->
+- [x] Refactor `RegisterControl.cs` for 2-column layout <!-- id: 18 -->
+- [x] Update `LoginControl.cs` to use new rounded design <!-- id: 19 -->
+- [x] Round Registration Panel Corners (Visual Consistency) <!-- id: 21 -->
+- [x] Create `ForgotPasswordControl.cs` <!-- id: 22 -->
+- [x] Create `OtpVerificationControl.cs` <!-- id: 23 -->
+- [x] Update `SfWelcomeForm.cs` to handle new navigation flows <!-- id: 24 -->
+- [x] Fix Compilation Errors (InitializeComponent) <!-- id: 26 -->
+- [x] Fix OTP "Resend Code" Button Styling (Invisible Text) <!-- id: 27 -->
+- [x] Create `ResetPasswordControl.cs` <!-- id: 28 -->
+- [x] Update `SfWelcomeForm.cs` to handle Reset Password navigation <!-- id: 29 -->
+- [ ] Verify Full Authentication Flow <!-- id: 25 -->
